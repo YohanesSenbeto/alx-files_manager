@@ -1,13 +1,11 @@
 const express = require('express');
+const routes = require('./routes');
+
 const app = express();
-const redisClient = require('./utils/redis');
-const dbClient = require('./utils/db');
+const PORT = process.env.PORT || 5000;
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log('Server running on port 5000');
+app.use('/', routes);
+
+app.listen(PORT, () => {
+  console.log('Server running on port', PORT);
 });
-
-app.use(express.json());
-app.use('/status', require('./routes/index'));
-
-app.listen();
