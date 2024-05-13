@@ -1,27 +1,47 @@
 const redis = require('redis');
 
-class Redis {
+class RedisClient {
   constructor() {
-    this.client = redis.createClient({
-      host: 'localhost',
-      port: 6379,
-      retry_strategy: () => {
-        console.log('Redis connection failed. Retrying...');
-      },
+    this.client = redis.createClient(process.env.REDIS_URL || 'redis://localhost:6379');
+    this.client.on('error', (err) => {
+      console.error('Redis error:', err);
     });
   }
 
-  async ping() {
+  isAlive() {
+    return this.client.ping((err, res) => {
+      if (err) return false;
+      return res === 'PONG';
+    });
+  }
+
+  async get(key) {
     return new Promise((resolve, reject) => {
-      this.client.ping((err, res) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
+      this.client.get(key, (err, value) => {
+        if (err) reject(err);
+        else resolve(value);
+      });
+    });
+  }
+
+  async set(key, value, duration) {
+    return new Promise((resolve, reject) => {
+      this.client.setex(key, duration, value, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
+      });
+    });
+  }
+
+  async del(key) {
+    return new Promise((resolve, reject) => {
+      this.client.del(key, (err, count) => {
+        if (err) reject(err);
+        else resolve(count);
       });
     });
   }
 }
 
-module.exports = new Redis();
+const redisClient = new RedisClient();
+module.exports = redisClient;
