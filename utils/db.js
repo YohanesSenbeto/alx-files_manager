@@ -1,48 +1,36 @@
-import { MongoClient } from 'mongodb';
+// utils/db.js
+const { MongoClient } = require('mongodb');
 
-let client;
+class DBClient {
+  constructor() {
+    this.host = process.env.DB_HOST || 'localhost';
+    this.port = process.env.DB_PORT || 27017;
+    this.database = process.env.DB_DATABASE || 'files_manager';
+    this.client = new MongoClient(`mongodb://${this.host}:${this.port}/`, { useUnifiedTopology: true });
+  }
 
-async function connectToDB() {
-  try {
-    client = new MongoClient('mongodb://localhost:27017/', { useNewUrlParser: true, useUnifiedTopology: true });
-    await client.connect(); // Connect to the MongoDB server
-    console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+  async isAlive() {
+    try {
+      await this.client.connect();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async nbUsers() {
+    const db = this.client.db(this.database);
+    const usersCollection = db.collection('users');
+    return usersCollection.countDocuments();
+  }
+
+  async nbFiles() {
+    const db = this.client.db(this.database);
+    const filesCollection = db.collection('files');
+    return filesCollection.countDocuments();
   }
 }
 
-async function isAlive() {
-  return client && client.isConnected();
-}
+const dbClient = new DBClient();
 
-async function nbUsers() {
-  try {
-    const db = client.db();
-    const collection = db.collection('users');
-    const count = await collection.countDocuments();
-    return count;
-  } catch (error) {
-    console.error('Error counting users:', error);
-    return null;
-  }
-}
-
-async function nbFiles() {
-  try {
-    const db = client.db();
-    const collection = db.collection('files');
-    const count = await collection.countDocuments();
-    return count;
-  } catch (error) {
-    console.error('Error counting files:', error);
-    return null;
-  }
-}
-
-export default {
-  connectToDB,
-  isAlive,
-  nbUsers,
-  nbFiles,
-};
+module.exports = dbClient;

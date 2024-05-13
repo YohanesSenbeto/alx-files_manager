@@ -1,14 +1,10 @@
 const express = require('express');
-
 const router = express.Router();
-const AppController = require('../controllers/AppController');
+const AuthController = require('../controllers/AuthController');
+const UserController = require('../controllers/UsersController');
 
-router.get('/status', (req, res) => {
-  AppController.getStatus(req, res);
-});
-
-router.get('/stats', (req, res) => {
-  AppController.getStats(req, res);
-});
+router.get('/connect', AuthController.getConnect);
+router.get('/disconnect', AuthController.getDisconnect);
+router.get('/users/me', UserController.getMe);
 
 module.exports = router;
