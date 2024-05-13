@@ -1,4 +1,4 @@
-import dbClient from "./utils/db";
+import dbClient from './utils/db';
 
 const waitConnection = () => {
     return new Promise((resolve, reject) => {
@@ -7,26 +7,24 @@ const waitConnection = () => {
             await setTimeout(() => {
                 i += 1;
                 if (i >= 10) {
-                    reject();
-                } else if (!dbClient.isAlive()) {
-                    repeatFct();
-                } else {
-                    resolve();
+                    reject()
+                }
+                else if(!dbClient.isAlive()) {
+                    repeatFct()
+                }
+                else {
+                    resolve()
                 }
             }, 1000);
         };
         repeatFct();
-    });
+    })
 };
 
 (async () => {
     console.log(dbClient.isAlive());
     await waitConnection();
     console.log(dbClient.isAlive());
-    try {
-        console.log(await dbClient.nbUsers());
-        console.log(await dbClient.nbFiles());
-    } catch (error) {
-        console.error(error);
-    }
+    console.log(await dbClient.nbUsers());
+    console.log(await dbClient.nbFiles());
 })();
