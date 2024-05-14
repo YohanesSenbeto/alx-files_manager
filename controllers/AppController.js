@@ -1,21 +1,23 @@
-const AppController = {
-  getStatus: (req, res) => {
-    // Logic to check if Redis and DB are alive
-    const status = {
-      redis: true,
-      db: true,
-    };
-    res.status(200).json(status);
-  },
+import redisClient from '../utils/redis';
+import dbClient from '../utils/db';
 
-  getStats: (req, res) => {
-    // Logic to count users and files
-    const stats = {
-      users: 12, // Example value, replace with actual count
-      files: 1231, // Example value, replace with actual count
-    };
-    res.status(200).json(stats);
-  },
-};
+export default class AppController {
+  static getStatus(req, res) {
+    res.status(200).json({
+      redis: redisClient.isAlive(),
+      db: dbClient.isAlive(),
+    });
+  }
 
-module.exports = AppController;
+  static async getStats(req, res) {
+    try {
+      const [usersCount, filesCount] = await Promise.all([
+        dbClient.nbUsers(),
+        dbClient.nbFiles()
+      ]);
+      res.status(200).json({ users: usersCount, files: filesCount });
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+}

@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
-const uuidv4 = require('uuid/v4');
-const redisClient = require('../utils/redisClient');
+const { v4: uuidv4 } = require('uuid');
+const redisClient = require('../utils/redis');
+const User = require('../models/User');
 
 const AuthController = {
   getConnect: async (req, res) => {
