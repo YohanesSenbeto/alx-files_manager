@@ -14,8 +14,16 @@ const UsersController = {
         return res.status(400).json({ error: 'Missing password' });
       }
 
+      // Ensure the database connection is established
+      if (!dbClient.isAlive()) {
+        return res
+          .status(500)
+          .json({ error: 'Database connection not available' });
+      }
+
       // Retrieve the users collection from the database
-      const usersCollection = await dbClient.collection('users');
+      const db = dbClient.client.db(); // Access the database instance from the client
+      const usersCollection = db.collection('users');
 
       // Check if user with same email already exists
       const existingUser = await usersCollection.findOne({ email });

@@ -11,8 +11,8 @@ const countUsers = () => 4; // Mock data: Assuming there are 4 users
 const countFiles = () => 30; // Mock data: Assuming there are 30 files
 
 module.exports = {
-    getRedisStatus,
-    getDBStatus,
-    countUsers,
-    countFiles,
+  getRedisStatus,
+  getDBStatus,
+  countUsers,
+  countFiles,
 };
