@@ -10,7 +10,12 @@ const AuthController = {
       return res.status(401).send({ error: 'Unauthorized' });
     }
 
-    const [email, password] = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+    const [email, password] = Buffer.from(
+      authHeader.split(' ')[1],
+      'base64',
+    )
+      .toString()
+      .split(':');
 
     // Find user by email and password
     const user = await User.findOne({ email });
@@ -24,7 +29,7 @@ const AuthController = {
     // Store token in Redis
     await redisClient.set(`auth_${token}`, user.id, 'EX', 24 * 60 * 60);
 
-    res.status(200).send({ token });
+    return res.status(200).send({ token }); // Added return statement
   },
 
   getDisconnect: async (req, res) => {
@@ -36,7 +41,7 @@ const AuthController = {
     // Remove token from Redis
     await redisClient.del(`auth_${token}`);
 
-    res.status(204).send();
+    return res.status(204).send(); // Added return statement
   },
 };
 
