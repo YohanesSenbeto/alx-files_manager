@@ -1,11 +1,11 @@
-//.eslintrc.json
 {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": "eslint:recommended",
-    "rules": {
-      "no-console": "off"
-    }
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-console": "off",
+    "implicit-arrow-linebreak": "off"
   }
+}

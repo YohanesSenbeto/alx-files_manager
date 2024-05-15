@@ -1,23 +1,24 @@
-import redisClient from '../utils/redis';
-import dbClient from '../utils/db';
+// AppController.js
 
-export default class AppController {
-  static getStatus(req, res) {
-    res.status(200).json({
-      redis: redisClient.isAlive(),
-      db: dbClient.isAlive(),
-    });
-  }
+const {
+  getRedisStatus,
+  getDBStatus,
+  countUsers,
+  countFiles,
+} = require('../utils/utils');
 
-  static async getStats(req, res) {
-    try {
-      const [usersCount, filesCount] = await Promise.all([
-        dbClient.nbUsers(),
-        dbClient.nbFiles()
-      ]);
-      res.status(200).json({ users: usersCount, files: filesCount });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  }
-}
+// Controller for /status endpoint
+const getStatus = (req, res) => {
+  const redisStatus = getRedisStatus();
+  const dbStatus = getDBStatus();
+  res.status(200).json({ redis: redisStatus, db: dbStatus });
+};
+
+// Controller for /stats endpoint
+const getStats = (req, res) => {
+  const numUsers = countUsers();
+  const numFiles = countFiles();
+  res.status(200).json({ users: numUsers, files: numFiles });
+};
+
+module.exports = { getStatus, getStats };
